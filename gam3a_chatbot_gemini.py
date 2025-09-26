@@ -10,6 +10,51 @@ st.set_page_config(
     layout="wide"
 )
 
+# Hide Streamlit UI elements (GitHub icon, menu, etc.)
+st.markdown("""
+<style>
+    /* Hide all Streamlit branding and UI elements */
+    #MainMenu {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+    
+    /* Hide GitHub icon and deploy button */
+    .stDeployButton {display: none !important;}
+    .stActionButton {display: none !important;}
+    
+    /* Hide "Made with Streamlit" badge */
+    .viewerBadge_container__1QSob {display: none !important;}
+    .viewerBadge_link__1S2L0 {display: none !important;}
+    
+    /* Hide settings and other buttons */
+    button[title="View fullscreen"] {visibility: hidden !important;}
+    button[title="Settings"] {visibility: hidden !important;}
+    
+    /* Clean padding and layout */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        max-width: 100%;
+    }
+    
+    /* Hide unnecessary UI elements */
+    .css-1rs6os.edgvbvh3 {display: none !important;}
+    .css-17eq0hr.e1fqkh3o1 {display: none !important;}
+    
+    /* Hide toolbar */
+    .stToolbar {display: none !important;}
+    
+    /* Additional hiding for newer Streamlit versions */
+    [data-testid="stToolbar"] {display: none !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+    
+    /* Custom app styling */
+    .stApp > header {display: none !important;}
+    .css-18e3th9 {padding-top: 0rem !important;}
+</style>
+""", unsafe_allow_html=True)
+
 # Now load other modules
 from gemini_node import (
     check_gemini_api_key,
