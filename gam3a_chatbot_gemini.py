@@ -112,15 +112,10 @@ INSTRUCTIONS:
 5. Focus on: BIS, FMI, SBS programs, Arabic/English systems, fees, admission process, and requirements.
 
 Available Information Summary:
-- BIS program details and career goals
-- FMI program details and career focus  
-- SBS program details and banking focus
+
 - Arabic system (2-year general + specialization)
-- English system (same structure, taught in English)
 - Application link for special programs
-- Interview process and acceptance criteria
 - Required documents for all programs
-- Fees: BIS/FMI ~55,000 EGP, Arabic correspondence ~3,500 EGP
 
 Answer questions directly and helpfully using this information."""
 
@@ -159,17 +154,10 @@ if not st.session_state.messages:
 مرحباً! أنا مساعدك الذي تم تطويره بواسطة "معاذ حجاج" لكلية التجارة وإدارة الأعمال بجامعة حلوان، مدعوم بتقنية **Google Gemini**.  
 
 اسألني عن أي شيء يتعلق بـ:  
-- أقسام وتخصصات الكلية (BIS, FMI, SBS, عربي, انجليزي)
+- الكليه
 - شروط وإجراءات القبول  
 - المصروفات والرسوم الدراسية والمعلومات المالية  
 - الأنشطة الطلابية والتنظيمات  
-- فرص التدريب الصيفي والإنترن شيب  
-- الإرشاد المهني وفرص العمل  
-- معلومات عن الدراسات العليا  
-- خدمات ومرافق الحرم الجامعي  
-- الدعم الأكاديمي والإرشاد  
-- معلومات السكن الطلابي  
-- بيانات التواصل  
 
 
 
