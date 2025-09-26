@@ -38,7 +38,7 @@ with col1:
         <h1>🎓 Faculty of Commerce & Business Administration</h1>
         <p>Helwan University - Gemini Chatbot</p>
         <p style='font-size: 1rem; margin-top: 0.5rem;'>Ask anything about the college!</p>
-        <p style='font-size: 0.8rem; margin-top: 0.5rem;'>🚀 Powered by Google Gemini</p>
+        
     </div>
     """, unsafe_allow_html=True)
 
@@ -126,12 +126,7 @@ if not st.session_state.messages:
 - معلومات السكن الطلابي  
 - بيانات التواصل  
 
-**🚀 مميزات Gemini:**
-- استجابة سريعة وذكية
-- مجاني بالكامل
-- دعم ممتاز للغة العربية
 
-ماذا تود أن تعرف؟  
 
         """)
 
@@ -193,6 +188,6 @@ if prompt := st.chat_input("Type your question here... 💬"):
 st.markdown("""
 ---
 <div style='text-align: center; color: #666; font-size: 0.8rem;'>
-    Made with ❤️ by معاذ حجاج | Powered by 🚀 Google Gemini
+    Made with ❤️ by معاذ حجاج 
 </div>
 """, unsafe_allow_html=True)
