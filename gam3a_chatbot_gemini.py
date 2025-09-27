@@ -67,6 +67,10 @@ from response_validator import (
 # Load environment variables
 load_dotenv()
 
+# Initialize session state FIRST
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 @st.cache_data
 def load_college_info():
     try:
@@ -89,15 +93,14 @@ with col1:
 
 with col2:
     st.markdown("<br>", unsafe_allow_html=True)
+    # Show message count (subtle indicator)
+    if len(st.session_state.messages) > 0:
+        st.caption(f"💬 {len(st.session_state.messages)} messages")
     if st.button("🗑️ Clear Chat", help="Clear conversation history"):
         st.session_state.messages = []
         st.rerun()
 
 college_info = load_college_info()
-
-# Initialize session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 base_system_message = f"""You are a helpful assistant for the Faculty of Commerce and Business Administration at Helwan University. Use the information provided below to answer student questions.
 
@@ -176,7 +179,7 @@ if prompt := st.chat_input("Type your question here... 💬"):
             fallback_msg = "أنا مساعد مخصص لكلية التجارة جامعة حلوان فقط. ممكن تسأل عن البرامج الدراسية (BIS, FMI, SBS)، التقديم، المصاريف، أو أي حاجة تانية متعلقة بالكلية؟"
             st.markdown(fallback_msg)
             st.session_state.messages.append({"role": "assistant", "content": fallback_msg})
-            st.rerun()
+        st.stop()  # Stop here instead of rerun
     
     # Generate assistant response
     with st.chat_message("assistant"):
@@ -185,8 +188,8 @@ if prompt := st.chat_input("Type your question here... 💬"):
             messages_with_system = [
                 {"role": "system", "content": st.session_state.system_message}
             ]
-            # Add recent conversation history (last 8 exchanges for better context)
-            recent_messages = st.session_state.messages[-8:]
+            # Add recent conversation history (last 10 exchanges for better context)
+            recent_messages = st.session_state.messages[-10:] if len(st.session_state.messages) > 10 else st.session_state.messages
             messages_with_system.extend(recent_messages)
             
             # Stream the response
@@ -214,8 +217,6 @@ if prompt := st.chat_input("Type your question here... 💬"):
                 "role": "assistant", 
                 "content": full_response
             })
-            
-        st.rerun()
 
 # Footer
 st.markdown("""

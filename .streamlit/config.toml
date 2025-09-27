@@ -11,8 +11,3 @@ enableXsrfProtection = false
 
 [browser]
 gatherUsageStats = false
-showErrorDetails = false
-
-[ui]
-hideTopBar = true
-hideSidebarNav = true
