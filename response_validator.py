@@ -105,29 +105,39 @@ def is_college_related_question(question: str) -> bool:
         "فصل", "semester", "مواد", "subjects", "انترفيو", "interview"
     ]
     
-    # Non-college keywords that should redirect
-    non_college_keywords = [
-        "weather", "طقس", "news", "اخبار", "sports", "رياضة",
-        "food", "اكل", "movie", "فيلم", "music", "موسيقى",
-        "politics", "سياسة", "religion", "دين"
-    ]
-    
     question_lower = question.lower()
-    
-    # If contains non-college keywords, it's not college-related
-    if any(keyword.lower() in question_lower for keyword in non_college_keywords):
-        return False
     
     # If contains college keywords, it's college-related
     if any(keyword.lower() in question_lower for keyword in college_keywords):
         return True
     
-    # Check for Arabic questions (likely college-related if in Arabic context)
-    if any(ord(char) > 127 for char in question) and len(question.strip()) > 2:
-        return True  # Assume Arabic questions are college-related
+    # Basic greetings and conversational starters - ALLOW these (will redirect to college)
+    greeting_patterns = [
+        r'^hello?$', r'^hi$', r'^hey$', r'thanks?', r'thank you',
+        r'good (morning|afternoon|evening)', r'how are you',
+        r'what.*my name', r'who am i', r'i am \w+', r'my name is'
+    ]    
     
-    # Default to False for very generic questions
-    return len(question.strip()) > 2
+    for pattern in greeting_patterns:
+        if re.search(pattern, question_lower):
+            return True  # Allow greetings - they'll be redirected
+    
+    # For very short questions without greeting patterns, be restrictive
+    if len(question.strip()) <= 2:
+        return False
+    
+    # Only reject clearly inappropriate or harmful content
+    inappropriate_patterns = [
+        r'how to (hack|steal|cheat)', r'illegal', r'drugs', r'violence',
+        r'explicit.*content', r'adult.*content'
+    ]
+    
+    for pattern in inappropriate_patterns:
+        if re.search(pattern, question_lower):
+            return False
+    
+    # Allow most questions - let the AI handle them intelligently
+    return True
 
 def clean_response(response: str, college_info: str) -> str:
     """
