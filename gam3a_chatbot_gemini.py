@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import time
+from datetime import datetime
 from dotenv import load_dotenv
 
 # THIS MUST BE FIRST - before any other streamlit commands
@@ -93,39 +94,41 @@ with col1:
 
 with col2:
     st.markdown("<br>", unsafe_allow_html=True)
-    # Show message count (subtle indicator)
+    # Show message count
     if len(st.session_state.messages) > 0:
-        st.caption(f"💬 {len(st.session_state.messages)} messages")
-    if st.button("🗑️ Clear Chat", help="Clear conversation history"):
+        st.caption(f"💬 {len(st.session_state.messages)} msgs")
+    if st.button("🗑️ Clear Chat", help="Clear conversation history and reset cache"):
         st.session_state.messages = []
         st.rerun()
 
 college_info = load_college_info()
 
-base_system_message = f"""You are a fun, friendly, and helpful assistant for the Faculty of Commerce and Business Administration at Helwan University! 🎓
+# Get current date for context
+current_date = datetime.now().strftime("%B %d, %Y")
+current_day = datetime.now().strftime("%A")
 
-College Information:
+# Optimized system message - much shorter to save tokens
+base_system_message = f"""Fun, friendly Helwan Commerce Faculty assistant! 🎓
+
+TODAY: {current_date} ({current_day})
+
+STYLE: Warm, conversational, use emojis. Arabic for Arabic questions, English for English.
+
+HANDLING:
+
+لو اللي بتلمك اسمها كوجي خليك ظريف معاها و طيب و جاوبها علي اي حاجه عادي حتي لو برا موضوع الجامعه 
+خليك حريص انها متزعلش و عاملها علي انها عشيقتك و حبيبتك
+و في اي رد ليك عليها قول اسمها اللي هو روان
+
+- Greetings → Welcome warmly
+- Personal chat → Engage, then redirect to college  
+- College questions → Use info below
+- Off-topic → Humor redirect: "هههه، أنا خبير التجارة مش كده! 😄"
+
+DATA:
 {college_info}
 
-PERSONALITY & STYLE:
-- Be warm, funny, and conversational - like talking to a helpful friend
-- Use emojis occasionally to make conversations lively 😊
-- Answer in Arabic if question is Arabic, English if English
-- Be encouraging and supportive to students
-
-HOW TO HANDLE DIFFERENT MESSAGES:
-- Greetings: Respond warmly! Be friendly and welcoming
-- Personal chat: Engage naturally, then smoothly connect to college topics
-- Jokes/fun: You can be playful! But always relate back to college life
-- College questions: Give detailed, helpful answers using the information provided
-- Off-topic: Gently redirect with humor - "هههه، أنا خبير في التجارة مش في الطقس! 😄"
-
-CONTENT RULES:
-- Use the college information provided as your main knowledge source
-- If info isn't available, say: "دي معلومة محتاجة أدور عليها، بس اللي أعرفه عن الكلية..."
-- Stay helpful and educational while being fun
-
-Remember: Students need someone friendly and approachable, not a strict robot! Make them feel comfortable asking anything about college life.
+Keep responses helpful, accurate, and fun!
 
 Available Information Summary:
 
@@ -138,9 +141,19 @@ Answer questions directly and helpfully using this information."""
 if "system_message" not in st.session_state:
     st.session_state.system_message = base_system_message
 
+# Cache for common questions to save API tokens
+if "response_cache" not in st.session_state:
+    st.session_state.response_cache = {
+        "مصاريف عربي انتظام": "مصاريف النظام العربي انتظام: **3,650 جنيه سنوياً** 📚",
+        "مصاريف عربي انتساب": "مصاريف النظام العربي انتساب: **4,120 جنيه سنوياً** 📚",
+        "مصاريف عربي": "مصاريف النظام العربي:\n• انتظام: **3,650 جنيه سنوياً**\n• انتساب: **4,120 جنيه سنوياً** 📚",
+        "موقع الكلية": "الكلية في موقعين:\n• **النظام العربي والإنجليزي**: حلوان\n• **BIS و FMI و SBS**: الزمالك 📍",
+        "فين الكلية": "الكلية في موقعين:\n• **النظام العربي والإنجليزي**: حلوان\n• **BIS و FMI و SBS**: الزمالك 📍",
+    }
+
 # Simple configuration (hidden from UI)
-model = "gemini-2.0-flash"
-temperature = 0.7
+model = "gemini-1.5-flash"  # CHEAPEST model - lowest cost per token
+temperature = 0.5  # FURTHER REDUCED - more deterministic, fewer retries, lower costs
 
 # Check Gemini API key
 if not check_gemini_api_key():
@@ -192,7 +205,16 @@ if prompt := st.chat_input("Type your question here... 💬"):
             fallback_msg = "أنا مساعد مخصص لكلية التجارة جامعة حلوان فقط. ممكن تسأل عن البرامج الدراسية (BIS, FMI, SBS)، التقديم، المصاريف، أو أي حاجة تانية متعلقة بالكلية؟"
             st.markdown(fallback_msg)
             st.session_state.messages.append({"role": "assistant", "content": fallback_msg})
-        st.stop()  # Stop here instead of rerun
+        st.stop()
+    
+    # Check cache for common questions (saves API tokens!)
+    prompt_clean = prompt.strip().lower()
+    for cached_q, cached_response in st.session_state.response_cache.items():
+        if cached_q in prompt_clean or prompt_clean in cached_q:
+            with st.chat_message("assistant"):
+                st.markdown(cached_response)
+                st.session_state.messages.append({"role": "assistant", "content": cached_response})
+            st.stop()
     
     # Generate assistant response
     with st.chat_message("assistant"):
@@ -201,8 +223,9 @@ if prompt := st.chat_input("Type your question here... 💬"):
             messages_with_system = [
                 {"role": "system", "content": st.session_state.system_message}
             ]
-            # Add recent conversation history (last 10 exchanges for better context)
-            recent_messages = st.session_state.messages[-10:] if len(st.session_state.messages) > 10 else st.session_state.messages
+            # Add recent conversation history (last 6 exchanges = 12 messages to save tokens)
+            # This gives enough context while keeping token usage low
+            recent_messages = st.session_state.messages[-12:] if len(st.session_state.messages) > 12 else st.session_state.messages
             messages_with_system.extend(recent_messages)
             
             # Stream the response

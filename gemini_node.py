@@ -1,10 +1,6 @@
 """
-Google Gemini LLM Node
-This module handles Google Gemini API integration with automatic cost tracking
+This module handles Google Gemini API integration with automatic cost tracking.
 """
-
-from typing import Dict, Any, List, Tuple, Optional
-import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 import streamlit as st
@@ -66,9 +62,9 @@ def stream_gemini_response(
 
 def process_gemini_message(
     messages: List[Dict[str, Any]], 
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-1.5-flash",  # CHEAPEST model
     streaming: bool = False,
-    temperature: float = 0.7
+    temperature: float = 0.5  # REDUCED for cost savings
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """
     Process messages using Google Gemini API
