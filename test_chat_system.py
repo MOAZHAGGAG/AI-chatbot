@@ -128,7 +128,7 @@ def test_gemini_api():
         full_response = ""
         response_chunks = 0
         
-        for chunk in stream_gemini_response(test_messages, model="gemini-1.5-flash", temperature=0.7):
+        for chunk in stream_gemini_response(test_messages, model="gemini-2.0-flash-lite", temperature=0.7):
             full_response += chunk
             response_chunks += 1
             if response_chunks > 50:  # Prevent infinite loops

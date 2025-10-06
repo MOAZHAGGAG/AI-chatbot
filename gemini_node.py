@@ -1,6 +1,8 @@
 """
 This module handles Google Gemini API integration with automatic cost tracking.
 """
+import os
+from typing import List, Dict, Any, Tuple
 from dotenv import load_dotenv
 import google.generativeai as genai
 import streamlit as st
@@ -27,7 +29,7 @@ def stream_gemini_response(
     
     Args:
         messages: List of message dictionaries with 'role' and 'content'
-        model: Gemini model to use (gemini-1.5-pro, gemini-1.5-flash)
+        model: Gemini model to use (gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash)
         temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
     
     Yields:
@@ -62,7 +64,7 @@ def stream_gemini_response(
 
 def process_gemini_message(
     messages: List[Dict[str, Any]], 
-    model: str = "gemini-1.5-flash",  # CHEAPEST model
+    model: str = "gemini-2.0-flash-lite",  # CHEAPEST stable model
     streaming: bool = False,
     temperature: float = 0.5  # REDUCED for cost savings
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
@@ -188,9 +190,12 @@ def calculate_gemini_cost(model: str = "gemini-2.0-flash", input_tokens: int = 0
     # Gemini pricing (as of 2025)
     # Note: Gemini has generous free tier limits
     pricing = {
-        "gemini-1.5-flash": {"input": 0.0, "output": 0.0},  # Free up to rate limits
-        "gemini-1.5-pro": {"input": 0.0, "output": 0.0},    # Free up to rate limits
-        "gemini-pro": {"input": 0.0, "output": 0.0},        # Free up to rate limits
+        "gemini-2.0-flash-lite": {"input": 0.0, "output": 0.0},  # CHEAPEST - Free up to rate limits
+        "gemini-2.0-flash": {"input": 0.0, "output": 0.0},       # Free up to rate limits
+        "gemini-2.5-flash": {"input": 0.0, "output": 0.0},       # Free up to rate limits
+        "gemini-1.5-flash": {"input": 0.0, "output": 0.0},       # Free up to rate limits (deprecated)
+        "gemini-1.5-pro": {"input": 0.0, "output": 0.0},         # Free up to rate limits
+        "gemini-pro": {"input": 0.0, "output": 0.0},             # Free up to rate limits
     }
     
     # Get pricing for the model (all are currently free)

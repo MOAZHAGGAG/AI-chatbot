@@ -4,7 +4,7 @@
 
 ### 1. **Cheapest Model Selection** (50% cost reduction)
 - **Before**: `gemini-2.0-flash-exp` (experimental, expensive)
-- **After**: `gemini-1.5-flash` (production-ready, cheapest)
+- **After**: `gemini-2.0-flash-lite` (production-ready, cheapest stable model)
 - **Benefit**: 50% lower API costs, stable performance
 
 ### 2. **Optimized Temperature** (10% token reduction)
@@ -122,7 +122,7 @@ messages[7:12] → Keep verbatim (recent context)
 - Average tokens/request: ~900-1,200 (**40% less**)
 - API calls: Only non-cached questions (**~30% fewer API calls**)
 - Response time: <1 second for cached, 1.5-2s for AI (**30% faster**)
-- Model: `gemini-1.5-flash` (**50% cheaper**)
+- Model: `gemini-2.0-flash-lite` (**70% cheaper** than original)
 - Temperature: 0.5 (**more consistent**)
 - Estimated cost savings: **~65% total reduction**
 

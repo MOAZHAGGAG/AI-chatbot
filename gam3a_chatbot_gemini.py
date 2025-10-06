@@ -152,7 +152,7 @@ if "response_cache" not in st.session_state:
     }
 
 # Simple configuration (hidden from UI)
-model = "gemini-1.5-flash"  # CHEAPEST model - lowest cost per token
+model = "gemini-2.0-flash-lite"  # CHEAPEST stable model - lowest cost per token
 temperature = 0.5  # FURTHER REDUCED - more deterministic, fewer retries, lower costs
 
 # Check Gemini API key
